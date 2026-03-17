@@ -1,0 +1,154 @@
+body{
+
+font-family:Arial, sans-serif;
+margin:0;
+background:#f4f4f4;
+scroll-behavior:smooth;
+transition:0.3s;
+
+}
+
+/* Header */
+
+header{
+
+background:#333;
+color:white;
+text-align:center;
+padding:20px;
+
+}
+
+/* Navigation */
+
+nav{
+
+background:#555;
+text-align:center;
+padding:10px;
+
+}
+
+nav a{
+
+color:white;
+margin:0 15px;
+text-decoration:none;
+font-weight:bold;
+
+}
+
+nav a:hover{
+
+color:yellow;
+
+}
+
+/* Sections */
+
+section{
+
+background:white;
+margin:25px auto;
+padding:25px;
+width:70%;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+
+}
+
+/* Form */
+
+form{
+
+display:flex;
+flex-direction:column;
+gap:10px;
+
+}
+
+input, textarea{
+
+padding:10px;
+border:1px solid #ccc;
+border-radius:5px;
+
+}
+
+button{
+
+padding:10px;
+background:#333;
+color:white;
+border:none;
+cursor:pointer;
+border-radius:5px;
+
+}
+
+.error{
+
+color:red;
+font-size:14px;
+
+}
+
+/* Footer */
+
+footer{
+
+background:#333;
+color:white;
+text-align:center;
+padding:10px;
+
+}
+
+/* Floating Dark Mode Button */
+
+.dark-toggle{
+
+position:fixed;
+top:20px;
+right:20px;
+width:45px;
+height:45px;
+border-radius:50%;
+border:none;
+background:#333;
+color:white;
+font-size:20px;
+cursor:pointer;
+box-shadow:0 0 10px rgba(0,0,0,0.3);
+z-index:1000;
+transition:0.3s;
+
+}
+
+.dark-toggle:hover{
+
+transform:scale(1.1);
+
+}
+
+/* Dark Mode */
+
+.dark{
+
+background:#121212;
+color:white;
+
+}
+
+.dark section{
+
+background:#1e1e1e;
+color:white;
+
+}
+
+.dark nav{
+
+background:#222;
+
+}
