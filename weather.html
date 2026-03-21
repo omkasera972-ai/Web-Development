@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Weather App</title>
+
+<style>
+
+body {
+
+font-family: monospace;
+background: black;
+color: #00ff88;
+
+display: flex;
+justify-content: center;
+align-items: center;
+
+height: 100vh;
+
+}
+
+.container {
+
+border: 2px solid #00ff88;
+padding: 30px;
+width: 400px;
+
+}
+
+input {
+
+padding: 10px;
+width: 70%;
+
+background: black;
+color: #00ff88;
+
+border: 1px solid #00ff88;
+
+}
+
+button {
+
+padding: 10px;
+background: #00ff88;
+border: none;
+
+cursor: pointer;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>WEATHER TERMINAL</h2>
+
+<input id="city" placeholder="Enter city name">
+
+<button onclick="getWeather()">RUN</button>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+/*
+Concepts Covered:
+
+1️⃣ REST API
+Used Open-Meteo public weather API
+
+2️⃣ HTTP Method
+GET request used via fetch()
+
+3️⃣ JSON
+Response converted using response.json()
+
+4️⃣ Async JavaScript
+async / await used
+
+5️⃣ Node.js Concept (Theory)
+Normally APIs like this are called via Node.js backend
+using Express server in production apps
+*/
+
+async function getWeather() {
+
+let city = document.getElementById("city").value;
+
+if(city === ""){
+
+document.getElementById("result").innerHTML =
+"ENTER CITY NAME";
+
+return;
+
+}
+
+/* REST API CALL (Geocoding API) */
+
+let geoResponse =
+await fetch(
+`https://geocoding-api.open-meteo.com/v1/search?name=${city}`
+);
+
+/* JSON Parsing */
+
+let geoData = await geoResponse.json();
+
+if(!geoData.results){
+
+document.getElementById("result").innerHTML =
+"CITY NOT FOUND";
+
+return;
+
+}
+
+let lat = geoData.results[0].latitude;
+let lon = geoData.results[0].longitude;
+
+/* WEATHER REST API CALL */
+
+let weatherResponse =
+await fetch(
+`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
+);
+
+let weatherData =
+await weatherResponse.json();
+
+/* DISPLAY RESULT */
+
+document.getElementById("result").innerHTML =
+
+`
+CITY : ${city}
+
+TEMPERATURE : ${weatherData.current_weather.temperature} °C
+
+WIND SPEED : ${weatherData.current_weather.windspeed} km/h
+
+TIME : ${weatherData.current_weather.time}
+`;
+
+}
+
+</script>
+
+</body>
+
+</html>
