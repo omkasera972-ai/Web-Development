@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — AI Narrated</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #07090f;
+  --surface:  #0e1117;
+  --card:     #131720;
+  --accent:   #7c6dfa;
+  --glow:     #a78bfa;
+  --green:    #34d399;
+  --red:      #f87171;
+  --text:     #e8eaf0;
+  --muted:    #5a6380;
+  --border:   rgba(124,109,250,0.12);
+  --font-h:   'Syne', sans-serif;
+  --font-b:   'Instrument Sans', sans-serif;
+  --font-m:   'JetBrains Mono', monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:80px;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);overflow-x:hidden;cursor:none;}
+
+/* ─── CURSOR ─── */
+#cur,#cur2{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+#cur{width:8px;height:8px;background:var(--glow);transition:transform .08s,width .2s,height .2s;}
+#cur2{width:36px;height:36px;border:1.5px solid rgba(124,109,250,0.5);transition:left .15s ease,top .15s ease,width .2s,height .2s;}
+body.speaking #cur{background:var(--green);box-shadow:0 0 12px var(--green);}
+body.speaking #cur2{border-color:rgba(52,211,153,0.6);}
+
+/* ─── NAV ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 56px;
+  background:rgba(7,9,15,0.7);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);}
+.logo{font-family:var(--font-h);font-size:1.3rem;font-weight:800;
+  background:linear-gradient(135deg,#fff,var(--glow));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+nav{display:flex;gap:32px;align-items:center;}
+nav a{font-family:var(--font-m);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s;}
+nav a:hover{color:var(--glow);}
+.nav-ai-badge{display:flex;align-items:center;gap:7px;padding:7px 14px;
+  background:rgba(124,109,250,0.1);border:1px solid var(--border);border-radius:20px;
+  font-family:var(--font-m);font-size:.65rem;letter-spacing:.1em;color:var(--glow);cursor:none;
+  transition:background .3s;}
+.nav-ai-badge:hover{background:rgba(124,109,250,0.2);}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);animation:pulse-dot 1.8s infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ─── HERO ─── */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  padding:0 56px;position:relative;overflow:hidden;}
+.hero-mesh{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 40%,rgba(124,109,250,.12),transparent),
+    radial-gradient(ellipse 40% 60% at 20% 70%,rgba(52,211,153,.07),transparent);
+  pointer-events:none;}
+.hero-lines{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(124,109,250,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,109,250,.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse 70% 70% at 60% 40%,black,transparent);}
+.hero-tag{font-family:var(--font-m);font-size:.72rem;letter-spacing:.2em;
+  color:var(--accent);text-transform:uppercase;margin-bottom:22px;
+  display:flex;align-items:center;gap:10px;
+  opacity:0;animation:riseUp .7s .2s ease forwards;}
+.hero-tag::before{content:'';display:inline-block;width:24px;height:1px;background:var(--accent);}
+.hero h1{font-family:var(--font-h);font-weight:800;
+  font-size:clamp(3.5rem,8vw,8.5rem);line-height:.95;letter-spacing:-.02em;
+  opacity:0;animation:riseUp .9s .4s ease forwards;}
+.hero h1 em{font-style:normal;
+  background:linear-gradient(135deg,var(--glow),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-desc{max-width:520px;margin-top:28px;color:var(--muted);font-size:1.05rem;line-height:1.8;
+  opacity:0;animation:riseUp .9s .65s ease forwards;}
+.hero-cta{display:flex;gap:14px;margin-top:44px;flex-wrap:wrap;
+  opacity:0;animation:riseUp .9s .85s ease forwards;}
+@keyframes riseUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:9px;
+  padding:13px 28px;border-radius:6px;border:none;
+  font-family:var(--font-m);font-size:.74rem;letter-spacing:.06em;
+  text-transform:uppercase;cursor:none;text-decoration:none;transition:all .25s;position:relative;}
+.btn-primary{background:var(--accent);color:#fff;font-weight:500;}
+.btn-primary:hover{background:var(--glow);box-shadow:0 0 24px rgba(124,109,250,.5);transform:translateY(-2px);}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--accent);color:var(--glow);transform:translateY(-2px);}
+
+/* ─── SECTION ─── */
+section{padding:110px 56px;position:relative;z-index:1;}
+.sec-label{font-family:var(--font-m);font-size:.68rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;}
+.sec-label::before{content:'';width:20px;height:1px;background:var(--accent);}
+.sec-title{font-family:var(--font-h);font-size:clamp(2.6rem,5vw,5rem);
+  font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:56px;}
+
+/* ─── NARRATE BTN (inline) ─── */
+.narrate-btn{display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:20px;border:1px solid var(--border);
+  background:rgba(124,109,250,.07);color:var(--muted);
+  font-family:var(--font-m);font-size:.65rem;letter-spacing:.1em;
+  text-transform:uppercase;cursor:none;transition:all .25s;margin-top:20px;}
+.narrate-btn:hover,.narrate-btn.active{border-color:var(--accent);color:var(--glow);
+  background:rgba(124,109,250,.15);}
+.narrate-btn svg{width:12px;height:12px;transition:transform .25s;}
+.narrate-btn.active svg{animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── ABOUT ─── */
+.about-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:start;}
+.about-body p{color:var(--muted);line-height:1.9;font-size:1.02rem;margin-bottom:18px;}
+.about-body p strong{color:var(--text);}
+.about-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;}
+.chip{font-family:var(--font-m);font-size:.65rem;letter-spacing:.1em;
+  padding:6px 14px;border:1px solid var(--border);border-radius:20px;color:var(--muted);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.stat{background:var(--card);padding:32px;text-align:center;}
+.stat-n{font-family:var(--font-h);font-size:2.8rem;font-weight:800;
+  background:linear-gradient(135deg,var(--glow),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;}
+.stat-l{font-family:var(--font-m);font-size:.62rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);margin-top:4px;display:block;}
+
+/* ─── SKILLS ─── */
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 72px;max-width:840px;}
+.sk{margin-bottom:4px;}
+.sk-head{display:flex;justify-content:space-between;margin-bottom:8px;}
+.sk-name{font-family:var(--font-m);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;}
+.sk-val{font-family:var(--font-m);font-size:.72rem;color:var(--accent);}
+.sk-track{height:2px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.sk-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--glow));
+  width:0;border-radius:2px;transition:width 1.6s cubic-bezier(.16,1,.3,1);}
+
+/* ─── PROJECTS ─── */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2px;
+  background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.proj{background:var(--card);padding:40px 36px;position:relative;overflow:hidden;cursor:none;
+  transition:background .3s;}
+.proj::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at var(--px,50%) var(--py,50%),rgba(124,109,250,.08),transparent 55%);
+  opacity:0;transition:opacity .4s;}
+.proj:hover::after{opacity:1;}
+.proj:hover{background:#141a26;}
+.proj-idx{font-family:var(--font-h);font-size:5rem;font-weight:800;
+  color:rgba(255,255,255,.03);position:absolute;bottom:20px;right:24px;line-height:1;}
+.proj-tag{font-family:var(--font-m);font-size:.62rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);
+  background:rgba(124,109,250,.1);padding:4px 10px;border-radius:3px;
+  display:inline-block;margin-bottom:18px;}
+.proj h3{font-family:var(--font-h);font-size:1.7rem;font-weight:700;
+  letter-spacing:-.01em;margin-bottom:12px;}
+.proj p{color:var(--muted);line-height:1.75;font-size:.92rem;margin-bottom:24px;}
+.proj-stack{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;}
+.proj-stack span{font-family:var(--font-m);font-size:.6rem;letter-spacing:.08em;
+  padding:3px 9px;border:1px solid var(--border);border-radius:3px;color:var(--muted);}
+
+/* ─── CONTACT ─── */
+.contact-inner{max-width:620px;}
+.contact-inner>p{color:var(--muted);line-height:1.8;margin-bottom:44px;font-size:1.02rem;}
+.field{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:6px;padding:14px 18px;color:var(--text);
+  font-family:var(--font-b);font-size:.95rem;outline:none;
+  transition:border-color .3s,background .3s;cursor:none;margin-bottom:14px;}
+.field:focus{border-color:var(--accent);background:rgba(124,109,250,.04);}
+.field::placeholder{color:var(--muted);}
+textarea.field{resize:none;height:128px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* ─── FOOTER ─── */
+footer{padding:36px 56px;display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;border-top:1px solid var(--border);}
+footer p{font-family:var(--font-m);font-size:.62rem;letter-spacing:.1em;color:var(--muted);}
+.soc{display:flex;gap:24px;}
+.soc a{font-family:var(--font-m);font-size:.62rem;letter-spacing:.1em;
+  color:var(--muted);text-decoration:none;transition:color .25s;}
+.soc a:hover{color:var(--glow);}
+
+/* ─── REVEAL ─── */
+.rev{opacity:0;transform:translateY(32px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1);}
+.rev.on{opacity:1;transform:none;}
+.rev[data-d="1"]{transition-delay:.1s}.rev[data-d="2"]{transition-delay:.2s}.rev[data-d="3"]{transition-delay:.3s}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
+
+/* ════════════════════════════════════════
+   AI VOICE NARRATION PANEL — CORE FEATURE
+   ════════════════════════════════════════ */
+
+/* Floating trigger pill */
+#ai-trigger{
+  position:fixed;bottom:32px;right:32px;z-index:300;
+  display:flex;align-items:center;gap:10px;
+  padding:12px 22px;border-radius:50px;
+  background:rgba(124,109,250,.15);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(124,109,250,.35);
+  cursor:none;transition:all .3s;
+  font-family:var(--font-m);font-size:.72rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--glow);}
+#ai-trigger:hover{background:rgba(124,109,250,.25);
+  box-shadow:0 0 30px rgba(124,109,250,.25);transform:translateY(-3px);}
+#ai-trigger.hidden{transform:translateY(100px);opacity:0;pointer-events:none;}
+.trig-icon{width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--glow));
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+
+/* Main panel */
+#ai-panel{
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
+  background:rgba(10,12,20,0.97);
+  backdrop-filter:blur(40px);
+  border-top:1px solid rgba(124,109,250,.2);
+  transform:translateY(100%);transition:transform .45s cubic-bezier(.16,1,.3,1);
+  padding:0;}
+#ai-panel.open{transform:translateY(0);}
+
+.ai-panel-inner{
+  max-width:900px;margin:0 auto;
+  padding:28px 32px 24px;
+  display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;}
+
+/* Left: track info + waveform */
+.ai-left{display:flex;flex-direction:column;gap:16px;}
+
+.ai-now-playing{display:flex;align-items:center;gap:14px;}
+.ai-avatar{width:44px;height:44px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--glow));
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+  position:relative;}
+.ai-avatar::after{content:'';position:absolute;inset:-2px;border-radius:12px;
+  border:1.5px solid transparent;
+  background:linear-gradient(135deg,var(--accent),var(--glow)) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:destination-out;mask-composite:exclude;}
+.ai-track-info{flex:1;}
+.ai-track-name{font-family:var(--font-h);font-size:1rem;font-weight:700;
+  letter-spacing:-.01em;color:var(--text);}
+.ai-track-sub{font-family:var(--font-m);font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin-top:3px;}
+
+/* Waveform */
+.ai-waveform{display:flex;align-items:center;gap:2.5px;height:40px;}
+.ai-bar{width:3px;border-radius:2px;background:var(--accent);opacity:.25;
+  transition:height .1s ease,opacity .1s ease;}
+.ai-bar.active{opacity:1;box-shadow:0 0 6px var(--accent);}
+
+/* Progress */
+.ai-progress-wrap{display:flex;align-items:center;gap:12px;}
+.ai-time{font-family:var(--font-m);font-size:.62rem;color:var(--muted);white-space:nowrap;}
+.ai-progress{flex:1;height:3px;background:rgba(255,255,255,.08);
+  border-radius:2px;overflow:hidden;cursor:none;}
+.ai-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--glow));
+  width:0;border-radius:2px;transition:width .5s linear;}
+
+/* Right: controls */
+.ai-right{display:flex;flex-direction:column;gap:16px;min-width:320px;}
+
+/* Controls row */
+.ai-controls{display:flex;align-items:center;justify-content:center;gap:8px;}
+.ai-ctrl{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;cursor:none;
+  transition:all .2s;font-size:.85rem;}
+.ai-ctrl:hover{border-color:var(--accent);color:var(--glow);background:rgba(124,109,250,.1);}
+.ai-ctrl.active{border-color:var(--green);color:var(--green);background:rgba(52,211,153,.1);}
+#btn-play-pause{width:48px;height:48px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--glow));
+  color:#fff;font-size:1rem;cursor:none;
+  transition:all .25s;box-shadow:0 0 20px rgba(124,109,250,.35);}
+#btn-play-pause:hover{transform:scale(1.08);box-shadow:0 0 32px rgba(124,109,250,.55);}
+
+/* Settings row */
+.ai-settings{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ai-setting-label{font-family:var(--font-m);font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);}
+.ai-select{background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:5px;color:var(--text);font-family:var(--font-m);font-size:.65rem;
+  padding:5px 10px;outline:none;cursor:none;transition:border-color .2s;}
+.ai-select:focus{border-color:var(--accent);}
+.ai-range{-webkit-appearance:none;appearance:none;
+  width:80px;height:3px;border-radius:2px;background:rgba(255,255,255,.08);outline:none;cursor:none;}
+.ai-range::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;
+  border-radius:50%;background:var(--glow);cursor:none;}
+
+/* Queue / sections */
+.ai-queue{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.ai-queue-item{font-family:var(--font-m);font-size:.6rem;letter-spacing:.08em;
+  padding:4px 12px;border-radius:12px;border:1px solid var(--border);
+  color:var(--muted);cursor:none;transition:all .2s;white-space:nowrap;}
+.ai-queue-item:hover{border-color:var(--accent);color:var(--glow);}
+.ai-queue-item.playing{border-color:var(--green);color:var(--green);
+  background:rgba(52,211,153,.07);}
+
+/* Close btn */
+#ai-close{position:absolute;top:18px;right:28px;
+  background:transparent;border:none;color:var(--muted);font-size:1.1rem;
+  cursor:none;transition:color .2s;}
+#ai-close:hover{color:var(--text);}
+
+/* Highlight effect on sections during narration */
+.narrating{outline:1.5px solid rgba(124,109,250,.3);
+  outline-offset:8px;border-radius:4px;
+  transition:outline .4s;}
+
+/* Volume icon */
+.vol-icon{font-size:.85rem;}
+
+@media(max-width:760px){
+  header{padding:14px 20px;}
+  nav a{display:none;}
+  .hero,.section,section{padding:80px 20px;}
+  .about-wrap{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+  .ai-panel-inner{grid-template-columns:1fr;gap:20px;padding:20px;}
+  .ai-right{min-width:0;}
+  footer{padding:24px 20px;flex-direction:column;align-items:flex-start;}
+  #ai-trigger{bottom:20px;right:20px;padding:10px 16px;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- ═══ NAV ═══ -->
+<header>
+  <div class="logo">Dev<span style="color:var(--accent)">.</span></div>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+    <button class="nav-ai-badge" onclick="openPanel()">
+      <span class="ai-dot"></span> AI Narrator
+    </button>
+  </nav>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero" id="sec-hero" data-narrate="Hi! Welcome to my portfolio. I'm a passionate web developer who crafts high-performance, visually stunning web experiences. I specialize in building modern interfaces that are fast, accessible, and impossible to ignore. Let me take you on a tour.">
+  <div class="hero-mesh"></div>
+  <div class="hero-lines"></div>
+  <p class="hero-tag">Available for Freelance — 2025</p>
+  <h1>I Build<br><em>Digital</em><br>Experiences</h1>
+  <p class="hero-desc">Full-stack web developer crafting interfaces that feel alive. Every pixel is intentional, every interaction is deliberate.</p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">View Projects ↓</a>
+    <a href="#contact" class="btn btn-outline">Let's Talk</a>
+    <button class="btn btn-outline" onclick="openPanel()">🎙️ AI Tour</button>
+  </div>
+</div>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about" data-narrate="About me. I'm a front-end developer obsessed with building things that look stunning and work flawlessly. I bridge the gap between design and engineering. Every pixel is intentional. I have over 3 years of experience, completed more than 20 projects, and served 15 happy clients. My core stack includes HTML, CSS, JavaScript, and React.">
+  <p class="sec-label rev">About</p>
+  <h2 class="sec-title rev">Crafting<br>With Purpose</h2>
+
+  <div class="about-wrap">
+    <div class="about-body rev">
+      <p>I'm a <strong>front-end developer</strong> obsessed with building things that look stunning and work flawlessly. I bridge the gap between design and engineering — every pixel is intentional.</p>
+      <p>With a strong foundation in <strong>HTML, CSS, JavaScript</strong> and modern frameworks, I build interactive, performant apps with real-world impact. I believe great code and great design are inseparable.</p>
+      <p>When I'm not coding, I explore design trends, contribute to open source, or have one too many cups of chai ☕</p>
+      <div class="about-chips">
+        <span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Node.js</span>
+        <span class="chip">Figma</span><span class="chip">Tailwind</span><span class="chip">Next.js</span>
+      </div>
+      <button class="narrate-btn" onclick="narrateSection('about')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Narrate This Section
+      </button>
+    </div>
+    <div class="rev" data-d="2">
+      <div class="stat-grid">
+        <div class="stat"><span class="stat-n">3+</span><span class="stat-l">Years</span></div>
+        <div class="stat"><span class="stat-n">20+</span><span class="stat-l">Projects</span></div>
+        <div class="stat"><span class="stat-n">15+</span><span class="stat-l">Clients</span></div>
+        <div class="stat"><span class="stat-n">100%</span><span class="stat-l">Satisfaction</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div style="margin-top:72px">
+    <p class="sec-label rev" style="margin-bottom:32px">Skills</p>
+    <div class="skills-grid rev">
+      <div class="sk"><div class="sk-head"><span class="sk-name">HTML / CSS</span><span class="sk-val">95%</span></div><div class="sk-track"><div class="sk-bar" data-w="95"></div></div></div>
+      <div class="sk"><div class="sk-head"><span class="sk-name">UI / UX Design</span><span class="sk-val">82%</span></div><div class="sk-track"><div class="sk-bar" data-w="82"></div></div></div>
+      <div class="sk"><div class="sk-head"><span class="sk-name">JavaScript</span><span class="sk-val">88%</span></div><div class="sk-track"><div class="sk-bar" data-w="88"></div></div></div>
+      <div class="sk"><div class="sk-head"><span class="sk-name">React / Next</span><span class="sk-val">80%</span></div><div class="sk-track"><div class="sk-bar" data-w="80"></div></div></div>
+      <div class="sk"><div class="sk-head"><span class="sk-name">Node.js</span><span class="sk-val">72%</span></div><div class="sk-track"><div class="sk-bar" data-w="72"></div></div></div>
+      <div class="sk"><div class="sk-head"><span class="sk-name">Git & DevOps</span><span class="sk-val">75%</span></div><div class="sk-track"><div class="sk-bar" data-w="75"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section id="projects" data-narrate="Here are my selected projects. Project one: Portfolio Website. A fully responsive personal portfolio with custom animations and smooth scroll interactions. Project two: Weather Dashboard. A live weather app with 7-day forecasts and real-time data from the OpenWeather API. Project three: Learning Platform. An interactive e-learning app with progress tracking, quizzes, and video modules built for scale.">
+  <p class="sec-label rev">Work</p>
+  <h2 class="sec-title rev">Selected<br>Projects</h2>
+  <div class="proj-grid">
+
+    <div class="proj rev" id="pr1" data-narrate="Portfolio Website. A cinematic personal portfolio featuring custom cursor animations, scroll-triggered reveals, glassmorphism cards, and a full AI voice narration system. Built entirely with vanilla HTML, CSS, and JavaScript.">
+      <div class="proj-idx">01</div>
+      <span class="proj-tag">Web App</span>
+      <h3>Portfolio Website</h3>
+      <p>A cinematic personal site with custom cursor, scroll-triggered reveals, glassmorphism, and a full AI voice narration system.</p>
+      <div class="proj-stack"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Web Speech API</span></div>
+      <button class="narrate-btn" onclick="narrateEl('pr1')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Narrate
+      </button>
+    </div>
+
+    <div class="proj rev" data-d="1" id="pr2" data-narrate="Weather Dashboard. A live weather app with 7-day forecast, geolocation detection, animated weather icons, hourly breakdown, and real-time data powered by the OpenWeather API.">
+      <div class="proj-idx">02</div>
+      <span class="proj-tag">API Integration</span>
+      <h3>Weather Dashboard</h3>
+      <p>Live weather app with 7-day forecasts, geolocation, animated icons, and real-time data from the OpenWeather API.</p>
+      <div class="proj-stack"><span>React</span><span>OpenWeather API</span><span>Chart.js</span></div>
+      <button class="narrate-btn" onclick="narrateEl('pr2')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Narrate
+      </button>
+    </div>
+
+    <div class="proj rev" data-d="2" id="pr3" data-narrate="Learning Platform. An interactive e-learning application with progress tracking, video modules, and quizzes. Built with a clean component architecture using React and Node.js for backend.">
+      <div class="proj-idx">03</div>
+      <span class="proj-tag">EdTech</span>
+      <h3>Learning Platform</h3>
+      <p>Interactive e-learning app with progress tracking, quizzes, and video modules. Built to scale with a clean component architecture.</p>
+      <div class="proj-stack"><span>React</span><span>Node.js</span><span>MongoDB</span></div>
+      <button class="narrate-btn" onclick="narrateEl('pr3')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Narrate
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" data-narrate="Get in touch. I'm always open to interesting conversations, freelance projects, and new opportunities. Send me a message and I'll get back to you within 24 hours. You can also reach me at example at email dot com.">
+  <div class="contact-inner">
+    <p class="sec-label rev">Contact</p>
+    <h2 class="sec-title rev">Let's Build<br>Something<span style="color:var(--accent)">.</span></h2>
+    <p class="rev">Have a project in mind, want to collaborate, or just want to say hello? I'm always open to interesting conversations and opportunities.</p>
+    <div class="rev" data-d="1">
+      <div class="field-row">
+        <input class="field" type="text" placeholder="Your Name">
+        <input class="field" type="email" placeholder="Email Address">
+      </div>
+      <textarea class="field" placeholder="Tell me about your project..."></textarea>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn btn-primary" onclick="handleSend(this)">Send Message →</button>
+        <span style="font-family:var(--font-m);font-size:.68rem;color:var(--muted)">
+          or <span style="color:var(--accent)">example@email.com</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <p>© 2025 Portfolio — All Rights Reserved</p>
+  <div class="soc">
+    <a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">Twitter</a><a href="#">Dribbble</a>
+  </div>
+</footer>
+
+<!-- ═══ AI VOICE PANEL TRIGGER ═══ -->
+<button id="ai-trigger" onclick="openPanel()">
+  <span class="trig-icon">🎙️</span>
+  AI Voice Narration
+</button>
+
+<!-- ═══ AI VOICE PANEL ═══ -->
+<div id="ai-panel">
+  <button id="ai-close" onclick="closePanel()">✕</button>
+  <div class="ai-panel-inner">
+
+    <!-- LEFT: track + waveform + progress -->
+    <div class="ai-left">
+      <div class="ai-now-playing">
+        <div class="ai-avatar" id="ai-avatar">🎙️</div>
+        <div class="ai-track-info">
+          <div class="ai-track-name" id="ai-track-name">AI Portfolio Narrator</div>
+          <div class="ai-track-sub" id="ai-track-sub">Ready — Press play to begin tour</div>
+        </div>
+      </div>
+
+      <!-- Animated waveform bars -->
+      <div class="ai-waveform" id="ai-waveform"></div>
+
+      <!-- Progress bar -->
+      <div class="ai-progress-wrap">
+        <span class="ai-time" id="ai-time-cur">0:00</span>
+        <div class="ai-progress"><div class="ai-progress-fill" id="ai-progress-fill"></div></div>
+        <span class="ai-time" id="ai-time-total">0:00</span>
+      </div>
+
+      <!-- Section queue chips -->
+      <div class="ai-queue" id="ai-queue"></div>
+    </div>
+
+    <!-- RIGHT: controls + settings -->
+    <div class="ai-right">
+      <!-- Main controls -->
+      <div class="ai-controls">
+        <button class="ai-ctrl" id="btn-prev" onclick="prevSection()" title="Previous section">⏮</button>
+        <button class="ai-ctrl" onclick="skipBack()" title="Replay section">↺</button>
+        <button id="btn-play-pause" onclick="togglePlay()">▶</button>
+        <button class="ai-ctrl" onclick="skipNext()" title="Skip to next">⏭</button>
+        <button class="ai-ctrl" id="btn-auto" onclick="toggleAuto()" title="Auto-advance sections">🔁</button>
+      </div>
+
+      <!-- Settings -->
+      <div class="ai-settings">
+        <span class="ai-setting-label">Voice</span>
+        <select class="ai-select" id="voice-select" onchange="changeVoice()"></select>
+
+        <span class="ai-setting-label">Speed</span>
+        <select class="ai-select" id="speed-select" onchange="changeSpeed()">
+          <option value="0.75">0.75×</option>
+          <option value="0.9">0.9×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.2">1.2×</option>
+          <option value="1.5">1.5×</option>
+        </select>
+
+        <span class="ai-setting-label vol-icon">🔊</span>
+        <input class="ai-range" type="range" id="vol-range" min="0" max="1" step="0.05" value="1" oninput="changeVol(this.value)">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════ SCRIPT ════════════ -->
+<script>
+// ─── CURSOR ───
+const cur=document.getElementById('cur');
+const cur2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cur2.style.left=rx+'px';cur2.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,input,textarea,select,.proj').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur2.style.width='54px';cur2.style.height='54px';});
+  el.addEventListener('mouseleave',()=>{cur2.style.width='36px';cur2.style.height='36px';});
+});
+
+// ─── PROJECT SPOTLIGHT ───
+document.querySelectorAll('.proj').forEach(p=>{
+  p.addEventListener('mousemove',e=>{
+    const r=p.getBoundingClientRect();
+    p.style.setProperty('--px',((e.clientX-r.left)/r.width*100)+'%');
+    p.style.setProperty('--py',((e.clientY-r.top)/r.height*100)+'%');
+  });
+});
+
+// ─── SCROLL REVEAL ───
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');}),{threshold:.12});
+document.querySelectorAll('.rev').forEach(el=>ro.observe(el));
+
+// ─── SKILL BARS ───
+const so=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting)e.target.querySelectorAll('.sk-bar').forEach(b=>b.style.width=b.dataset.w+'%');
+}),{threshold:.3});
+document.querySelectorAll('.skills-grid').forEach(el=>so.observe(el));
+
+// ─── CONTACT ───
+function handleSend(btn){
+  speak("Thank you for your message! I'll get back to you within 24 hours.");
+  btn.textContent='Sent ✓';btn.style.background='var(--green)';
+  setTimeout(()=>{btn.textContent='Send Message →';btn.style.background='';},3000);
+}
+
+// ══════════════════════════════════════════
+// AI VOICE NARRATION ENGINE
+// ══════════════════════════════════════════
+const SECTIONS=[
+  {id:'sec-hero',  label:'Intro',    emoji:'👋'},
+  {id:'about',     label:'About',    emoji:'🙋'},
+  {id:'projects',  label:'Projects', emoji:'💼'},
+  {id:'contact',   label:'Contact',  emoji:'📬'},
+];
+let voices=[];
+let selectedVoice=null;
+let rate=1,volume=1;
+let currentIdx=0;
+let isPlaying=false;
+let autoAdvance=true;
+let utter=null;
+let startTime=0,elapsed=0,totalDur=0;
+let timerInterval=null;
+let waveInterval=null;
+
+// Build waveform bars
+const waveEl=document.getElementById('ai-waveform');
+const BAR_COUNT=32;
+const heights=[2,3,4,6,8,10,14,18,22,26,28,30,28,26,22,18,14,10,8,6,5,4,4,6,10,14,18,22,24,20,14,8];
+for(let i=0;i<BAR_COUNT;i++){
+  const b=document.createElement('div');b.className='ai-bar';
+  b.style.height=(heights[i]||6)+'px';waveEl.appendChild(b);
+}
+const bars=[...waveEl.querySelectorAll('.ai-bar')];
+
+// Build queue chips
+const queueEl=document.getElementById('ai-queue');
+SECTIONS.forEach((s,i)=>{
+  const c=document.createElement('button');
+  c.className='ai-queue-item'; c.textContent=s.emoji+' '+s.label;
+  c.onclick=()=>{currentIdx=i;loadSection(i);if(isPlaying)startSpeaking();else updateUI();};
+  queueEl.appendChild(c);
+});
+
+// Load voices
+function loadVoices(){
+  voices=window.speechSynthesis.getVoices();
+  const sel=document.getElementById('voice-select');
+  sel.innerHTML='';
+  const preferred=['Google UK English Female','Google US English','Microsoft Zira','Samantha','Karen','Victoria'];
+  const sorted=[...voices].sort((a,b)=>{
+    const ai=preferred.findIndex(p=>a.name.includes(p.split(' ')[0]));
+    const bi=preferred.findIndex(p=>b.name.includes(p.split(' ')[0]));
+    return (ai===-1?99:ai)-(bi===-1?99:bi);
+  });
+  sorted.filter(v=>v.lang.startsWith('en')).forEach((v,i)=>{
+    const o=document.createElement('option');
+    o.value=i;o.textContent=v.name.length>22?v.name.slice(0,22)+'…':v.name;
+    if(i===0)selectedVoice=v;
+    sel.appendChild(o);
+  });
+}
+window.speechSynthesis.onvoiceschanged=loadVoices;
+loadVoices();
+
+function changeVoice(){
+  const sel=document.getElementById('voice-select');
+  const enVoices=voices.filter(v=>v.lang.startsWith('en'));
+  selectedVoice=enVoices[+sel.value]||null;
+}
+function changeSpeed(){rate=+document.getElementById('speed-select').value;}
+function changeVol(v){volume=+v;}
+
+// Panel open/close
+function openPanel(){
+  document.getElementById('ai-panel').classList.add('open');
+  document.getElementById('ai-trigger').classList.add('hidden');
+  buildQueue();
+}
+function closePanel(){
+  document.getElementById('ai-panel').classList.remove('open');
+  document.getElementById('ai-trigger').classList.remove('hidden');
+  stopSpeaking();
+}
+
+function buildQueue(){
+  const chips=[...queueEl.querySelectorAll('.ai-queue-item')];
+  chips.forEach((c,i)=>c.classList.toggle('playing',i===currentIdx));
+}
+
+function loadSection(idx){
+  const s=SECTIONS[idx];
+  document.getElementById('ai-track-name').textContent=s.emoji+' '+s.label;
+  document.getElementById('ai-track-sub').textContent=isPlaying?'Narrating…':'Ready';
+  document.getElementById('ai-avatar').textContent=s.emoji;
+  buildQueue();
+}
+
+function getText(idx){
+  const s=SECTIONS[idx];
+  const el=document.getElementById(s.id);
+  return el?(el.dataset.narrate||el.innerText.trim().slice(0,400)):'';
+}
+
+function startSpeaking(){
+  const text=getText(currentIdx);
+  if(!text)return;
+  window.speechSynthesis.cancel();
+  utter=new SpeechSynthesisUtterance(text);
+  utter.rate=rate; utter.volume=volume; utter.pitch=1.05;
+  if(selectedVoice)utter.voice=selectedVoice;
+  // Estimate duration
+  const words=text.split(' ').length;
+  totalDur=Math.round((words/2.5)/rate);
+  startTime=Date.now(); elapsed=0;
+  document.getElementById('ai-time-total').textContent=fmtTime(totalDur);
+  document.getElementById('ai-progress-fill').style.width='0%';
+
+  utter.onstart=()=>{
+    isPlaying=true;
+    document.getElementById('btn-play-pause').textContent='⏸';
+    document.getElementById('ai-track-sub').textContent='Narrating…';
+    document.body.classList.add('speaking');
+    startWave();startTimer();
+    scrollToSection(currentIdx);
+    highlightSection(currentIdx);
+  };
+  utter.onend=()=>{
+    isPlaying=false;
+    document.getElementById('btn-play-pause').textContent='▶';
+    document.getElementById('ai-track-sub').textContent='Done';
+    document.getElementById('ai-progress-fill').style.width='100%';
+    document.body.classList.remove('speaking');
+    stopWave();stopTimer();
+    clearHighlight();
+    if(autoAdvance&&currentIdx<SECTIONS.length-1){
+      currentIdx++;setTimeout(()=>{loadSection(currentIdx);startSpeaking();},600);
+    }
+  };
+  utter.onerror=()=>{stopSpeaking();};
+  window.speechSynthesis.speak(utter);
+}
+
+function stopSpeaking(){
+  window.speechSynthesis.cancel();
+  isPlaying=false;
+  document.getElementById('btn-play-pause').textContent='▶';
+  document.getElementById('ai-track-sub').textContent='Paused';
+  document.body.classList.remove('speaking');
+  stopWave();stopTimer();clearHighlight();
+}
+
+function togglePlay(){
+  if(isPlaying){stopSpeaking();}
+  else{loadSection(currentIdx);startSpeaking();}
+}
+function skipBack(){stopSpeaking();loadSection(currentIdx);startSpeaking();}
+function skipNext(){
+  stopSpeaking();
+  if(currentIdx<SECTIONS.length-1){currentIdx++;}
+  loadSection(currentIdx);startSpeaking();
+}
+function prevSection(){
+  stopSpeaking();
+  if(currentIdx>0){currentIdx--;}
+  loadSection(currentIdx);startSpeaking();
+}
+function toggleAuto(){
+  autoAdvance=!autoAdvance;
+  document.getElementById('btn-auto').classList.toggle('active',autoAdvance);
+}
+document.getElementById('btn-auto').classList.add('active');
+
+// Section-specific narrate (inline buttons)
+function narrateSection(secId){
+  const idx=SECTIONS.findIndex(s=>s.id===secId);
+  if(idx<0)return;
+  openPanel();
+  currentIdx=idx;loadSection(idx);startSpeaking();
+}
+function narrateEl(elId){
+  openPanel();
+  const text=document.getElementById(elId)?.dataset?.narrate||document.getElementById(elId)?.innerText?.slice(0,400);
+  if(!text)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=rate;u.volume=volume;u.pitch=1.05;
+  if(selectedVoice)u.voice=selectedVoice;
+  document.getElementById('ai-track-sub').textContent='Narrating element…';
+  u.onstart=()=>{document.body.classList.add('speaking');startWave();};
+  u.onend=()=>{document.body.classList.remove('speaking');stopWave();
+    document.getElementById('ai-track-sub').textContent='Done';};
+  window.speechSynthesis.speak(u);
+}
+function speak(text){
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=rate;u.volume=volume;
+  if(selectedVoice)u.voice=selectedVoice;
+  window.speechSynthesis.speak(u);
+}
+
+// Waveform animation
+function startWave(){
+  let frame=0;
+  waveInterval=setInterval(()=>{
+    frame++;
+    bars.forEach((b,i)=>{
+      const base=heights[i]||6;
+      const wave=Math.sin(frame*.18+i*.35)*base*.6;
+      const h=Math.max(2,base+wave+(Math.random()*3-1.5));
+      b.style.height=h+'px';
+      b.classList.toggle('active',Math.abs(wave)>base*.2);
+    });
+  },80);
+}
+function stopWave(){
+  clearInterval(waveInterval);
+  bars.forEach((b,i)=>{b.style.height=(heights[i]||6)+'px';b.classList.remove('active');});
+}
+
+// Timer
+function startTimer(){
+  timerInterval=setInterval(()=>{
+    elapsed=Math.min(totalDur,(Date.now()-startTime)/1000);
+    document.getElementById('ai-time-cur').textContent=fmtTime(elapsed);
+    const pct=totalDur>0?(elapsed/totalDur*100):0;
+    document.getElementById('ai-progress-fill').style.width=pct+'%';
+  },300);
+}
+function stopTimer(){clearInterval(timerInterval);}
+function fmtTime(s){const m=Math.floor(s/60);const ss=Math.floor(s%60);return m+':'+(ss<10?'0':'')+ss;}
+
+// Scroll & highlight
+function scrollToSection(idx){
+  const el=document.getElementById(SECTIONS[idx].id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function highlightSection(idx){
+  clearHighlight();
+  const el=document.getElementById(SECTIONS[idx].id);
+  if(el)el.classList.add('narrating');
+}
+function clearHighlight(){
+  document.querySelectorAll('.narrating').forEach(el=>el.classList.remove('narrating'));
+}
+function updateUI(){loadSection(currentIdx);}
+</script>
+</body>
+</html>
